@@ -326,11 +326,11 @@ def _file_lock(target_path: Path) -> Iterator[None]:
         # LOCK_EX = exclusive lock; blocks until acquired. For a
         # single-user CLI tool, blocking is fine — the user is going
         # to wait a fraction of a second behind another `pv` invocation
-        _fcntl.flock(fd, _fcntl.LOCK_EX)
+        _fcntl.flock(fd, _fcntl.LOCK_EX)  # type: ignore[attr-defined]
         try:
             yield
         finally:
-            _fcntl.flock(fd, _fcntl.LOCK_UN)
+            _fcntl.flock(fd, _fcntl.LOCK_UN)  # type: ignore[attr-defined]
     finally:
         os.close(fd)
 

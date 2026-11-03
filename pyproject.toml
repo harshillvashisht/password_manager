@@ -39,7 +39,7 @@ description = "Beginner-friendly encrypted password manager (Argon2id + AES-256-
 # The minimum Python version this project supports.
 # >=3.13 means "Python 3.13 or anything newer."
 # We need 3.13 because we use modern type-hint syntax (X | None).
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 
 # Who wrote it. Shows up in package metadata.
 authors = [

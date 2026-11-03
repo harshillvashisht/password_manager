@@ -44,6 +44,7 @@ Commands exposed
   delete <name>    — remove an entry
   change-password  — rotate the master password (re-encrypts vault)
   gen              — generate a random password (no vault touched)
+  check            — rate a password without displaying it
 
 Connects to
   vault.py — instantiates UnlockedVault for read/write operations
@@ -88,6 +89,8 @@ from password_manager.constants import (
     MSG_MASTER_PASSWORD_EMPTY,
     MSG_MASTER_PASSWORD_TOO_SHORT,
     MSG_PASSWORDS_DO_NOT_MATCH,
+    MSG_PASSWORD_STRENGTH_CONFIRM,
+    MSG_PASSWORD_STRENGTH_WARNING,
     MSG_VAULT_ALREADY_EXISTS,
     MSG_VAULT_CREATED,
     MSG_VAULT_EMPTY,
@@ -109,6 +112,7 @@ from password_manager.generator import (
     PasswordTooShortError,
     generate_password,
 )
+from password_manager.strength import check_password_strength
 # Local: every vault-layer name we need — the Entry record, the
 # UnlockedVault class, and every domain-specific error we catch.
 from password_manager.vault import (
@@ -434,6 +438,12 @@ def add(
             notes = notes,
         )
 
+        strength = check_password_strength(password)
+        if strength.rating == "weak":
+            error_console.print(f"[yellow]{MSG_PASSWORD_STRENGTH_WARNING}[/yellow]")
+            if not typer.confirm(MSG_PASSWORD_STRENGTH_CONFIRM, default = False):
+                raise typer.Exit(code = 1)
+
         try:
             unlocked.add_entry(name, entry, force = force)
         except EntryAlreadyExistsError:
@@ -449,6 +459,19 @@ def add(
 
         unlocked.save()
     console.print(f"[green]{MSG_ENTRY_ADDED.format(name=name)}[/green]")
+
+
+@app.command()
+def check() -> None:
+    """
+    Rate a password entered through a hidden prompt
+    """
+    password = _prompt_master_password("Password to check (hidden): ")
+    strength = check_password_strength(password)
+    console.print(f"Strength: [bold]{strength.rating}[/bold]")
+    console.print(f"Length: {strength.length}")
+    console.print(f"Character variety: {strength.character_variety}/4")
+    console.print(f"Estimated entropy: {strength.entropy_bits:.1f} bits")
 
 
 @app.command()

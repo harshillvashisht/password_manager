@@ -245,3 +245,9 @@ MSG_MASTER_PASSWORD_TOO_SHORT: Final[str] = (
 MSG_MASTER_PASSWORD_CHANGED: Final[str] = (
     "Master password changed. Vault re-encrypted at {path}"
 )
+MSG_PASSWORD_STRENGTH_WARNING: Final[str] = (
+    "Warning: this password is weak."
+)
+MSG_PASSWORD_STRENGTH_CONFIRM: Final[str] = (
+    "Use this weak password anyway?"
+)
